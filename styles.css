@@ -127,8 +127,8 @@ body {
 
 .logo {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
     margin-bottom: 35px;
     color: var(--ui-accent);
 }
@@ -142,6 +142,32 @@ body {
 
 .logo span {
     color: var(--ui-accent);
+}
+
+/* Mobile Menu Buttons (Hidden on Desktop) */
+.mobile-menu-btn,
+.mobile-close-btn {
+    display: none;
+    background: var(--ui-panel);
+    color: var(--ui-text);
+    border: 1px solid var(--ui-border);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-close-btn {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    font-size: 1.5rem;
+    padding: 5px;
+    color: var(--ui-text-muted);
 }
 
 .control-group {
@@ -1552,22 +1578,49 @@ body[data-theme="caderno"] .type-lamina-4img .decor-band {
    ============= RESPONSIVE DESIGN (MOBILE) =================
    ========================================================== */
 @media (max-width: 768px) {
-    .app-container {
-        flex-direction: column;
+    body {
+        overflow-y: hidden !important;
+        /* Lock body scrolling, rely on workspace */
+        height: 100vh !important;
     }
 
+    .app-container {
+        flex-direction: column;
+        height: 100vh;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Floating sliding sidebar */
     .sidebar {
-        width: 100%;
-        max-height: 45vh;
-        /* Take up less than half of the screen */
-        border-right: none;
-        border-bottom: 2px solid var(--ui-border);
-        padding: 15px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: fixed;
+        left: -100%;
+        /* Hidden by default */
+        top: 0;
+        width: 340px;
+        max-width: 90vw;
+        height: 100%;
+        max-height: 100%;
+        border-right: 1px solid var(--ui-border);
+        border-bottom: none;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Class added by JS to open sidebar */
+    body.sidebar-open .sidebar {
+        left: 0;
+    }
+
+    /* Buttons visibility */
+    .mobile-menu-btn,
+    .mobile-close-btn {
+        display: flex;
     }
 
     .logo {
-        margin-bottom: 15px;
+        margin-bottom: 25px;
     }
 
     .logo h2 {
@@ -1588,17 +1641,21 @@ body[data-theme="caderno"] .type-lamina-4img .decor-band {
     }
 
     .workspace-header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 15px;
-        gap: 10px;
-        height: auto;
+        flex-direction: row;
+        /* Keep side by side with mobile menu button */
+        align-items: center;
+        padding: 15px;
+        gap: 15px;
+        flex-wrap: wrap;
     }
 
     .preview-container {
         padding: 20px 10px;
-        /* Custom scrolling on mobile allows seeing the full zoomed page */
         overflow: auto;
+        /* Allow scrolling inside the preview instead of global */
+        align-items: flex-start;
+        height: calc(100vh - 80px);
+        /* Fill remaining space */
     }
 
     .modal-content {

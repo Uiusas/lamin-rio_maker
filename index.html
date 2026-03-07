@@ -25,8 +25,11 @@
         <!-- Sidebar / Toolbar -->
         <aside class="sidebar">
             <div class="logo">
-                <i class="fas fa-microscope" style="font-size: 1.8rem;"></i>
-                <h2>Laminário<span>Gen</span></h2>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fas fa-microscope" style="font-size: 1.8rem;"></i>
+                    <h2>Laminário<span>Gen</span></h2>
+                </div>
+                <button id="mobile-close-btn" class="mobile-close-btn"><i class="fas fa-times"></i></button>
             </div>
 
             <div class="control-group">
@@ -132,6 +135,7 @@
         <!-- Main Workspace -->
         <main class="workspace">
             <div class="workspace-header">
+                <button id="mobile-menu-btn" class="mobile-menu-btn"><i class="fas fa-bars"></i> Menu</button>
                 <div class="zoom-controls">
                     <button onclick="app.zoom(-0.1)" title="Diminuir Zoom"><i class="fas fa-search-minus"></i></button>
                     <span id="zoom-level">100%</span>

@@ -19,6 +19,8 @@ class LaminarioApp {
         this.textColorPicker = document.getElementById('text-color-picker');
         this.frameColorPicker = document.getElementById('frame-color-picker');
         this.zoomDisplay = document.getElementById('zoom-level');
+        this.mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        this.mobileCloseBtn = document.getElementById('mobile-close-btn');
         this.documentPreview = document.getElementById('document-preview');
         this.pagesListEl = document.getElementById('pages-list');
 
@@ -94,6 +96,18 @@ class LaminarioApp {
                 document.body.classList.add(`shape-${shape}`);
             }
         });
+
+        // Mobile Sidebar Toggle Listeners
+        if (this.mobileMenuBtn) {
+            this.mobileMenuBtn.addEventListener('click', () => {
+                document.body.classList.add('sidebar-open');
+            });
+        }
+        if (this.mobileCloseBtn) {
+            this.mobileCloseBtn.addEventListener('click', () => {
+                document.body.classList.remove('sidebar-open');
+            });
+        }
     }
 
     zoom(delta) {

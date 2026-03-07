@@ -1547,3 +1547,91 @@ body[data-theme="caderno"] .type-lamina-4img .decor-band {
     left: 0;
     width: 40px;
 }
+
+/* ==========================================================
+   ============= RESPONSIVE DESIGN (MOBILE) =================
+   ========================================================== */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-height: 45vh;
+        /* Take up less than half of the screen */
+        border-right: none;
+        border-bottom: 2px solid var(--ui-border);
+        padding: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+        margin-bottom: 15px;
+    }
+
+    .logo h2 {
+        font-size: 1.3rem;
+    }
+
+    .color-pickers {
+        grid-template-columns: 1fr 1fr !important;
+        /* Force 2 columns max */
+    }
+
+    .color-pickers label[style*="grid-column: span 2"] {
+        grid-column: span 2 !important;
+    }
+
+    .page-types {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .workspace-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+        gap: 10px;
+        height: auto;
+    }
+
+    .preview-container {
+        padding: 20px 10px;
+        /* Custom scrolling on mobile allows seeing the full zoomed page */
+        overflow: auto;
+    }
+
+    .modal-content {
+        width: 95vw;
+        height: 90vh;
+        margin: 5vh auto;
+    }
+
+    .cropper-container {
+        max-height: 60vh;
+    }
+
+    /* Caderno layout overrides for mobile viewing */
+    body[data-theme="caderno"] .page-capa {
+        padding-left: 200px;
+    }
+
+    body[data-theme="caderno"] .page-sumario {
+        padding-right: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .color-pickers {
+        grid-template-columns: 1fr !important;
+        /* Stack vertically on very small phones */
+    }
+
+    .color-pickers label[style*="grid-column: span 2"] {
+        grid-column: 1 !important;
+    }
+
+    .page-types {
+        grid-template-columns: 1fr;
+    }
+}

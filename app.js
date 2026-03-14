@@ -18,9 +18,10 @@ class LaminarioApp {
         this.titleColorPicker = document.getElementById('title-color-picker');
         this.textColorPicker = document.getElementById('text-color-picker');
         this.frameColorPicker = document.getElementById('frame-color-picker');
+        this.fontSizeSlider = document.getElementById('font-size-slider');
+        this.fontSizeVal = document.getElementById('font-size-val');
+
         this.zoomDisplay = document.getElementById('zoom-level');
-        this.mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        this.mobileCloseBtn = document.getElementById('mobile-close-btn');
         this.documentPreview = document.getElementById('document-preview');
         this.pagesListEl = document.getElementById('pages-list');
 
@@ -86,6 +87,12 @@ class LaminarioApp {
             document.body.style.setProperty('--page-text', e.target.value);
         });
 
+        this.fontSizeSlider.addEventListener('input', (e) => {
+            const size = e.target.value + 'px';
+            this.fontSizeVal.innerText = size;
+            document.documentElement.style.setProperty('--base-font-size', size);
+        });
+
         this.shapeSelector.addEventListener('change', (e) => {
             const shape = e.target.value;
             // Clear all possible override classes first
@@ -96,18 +103,6 @@ class LaminarioApp {
                 document.body.classList.add(`shape-${shape}`);
             }
         });
-
-        // Mobile Sidebar Toggle Listeners
-        if (this.mobileMenuBtn) {
-            this.mobileMenuBtn.addEventListener('click', () => {
-                document.body.classList.add('sidebar-open');
-            });
-        }
-        if (this.mobileCloseBtn) {
-            this.mobileCloseBtn.addEventListener('click', () => {
-                document.body.classList.remove('sidebar-open');
-            });
-        }
     }
 
     zoom(delta) {
@@ -158,9 +153,11 @@ class LaminarioApp {
     }
 
     renderPages() {
-        // Clear current elements
+        // Clear sidebar list current elements
         this.pagesListEl.innerHTML = '';
-        this.documentPreview.innerHTML = '';
+
+        const previewFragment = document.createDocumentFragment();
+        const activeIds = new Set();
 
         this.pages.forEach((page, index) => {
             let pageNum = index + 1;
@@ -179,10 +176,7 @@ class LaminarioApp {
             `;
             this.pagesListEl.appendChild(li);
 
-            // Build Document Preview Item
-            const docPage = document.createElement('div');
-            docPage.className = 'doc-page type-' + page.type;
-            docPage.id = page.id;
+            // We will fetch or create docPage at the end of the loop to preserve state
 
             const decorHtml = `
                 <div class="theme-decorations">
@@ -201,6 +195,20 @@ class LaminarioApp {
                     <!-- Pokemon Decor -->
                     <div class="pk-stripe pk-red"></div>
                     <div class="pk-stripe pk-white"></div>
+
+                    <!-- Silksong Decor -->
+                    <div class="ss-embers"></div>
+                    <div class="ss-vignette"></div>
+
+                    <!-- Hexatombe Decor -->
+                    <div class="hx-grunge"></div>
+                    <div class="hx-blood-splatter"></div>
+                    <div class="hx-vignette"></div>
+
+                    <!-- Sinais do Outro Lado Decor -->
+                    <div class="sn-swirl"></div>
+                    <div class="sn-glitch"></div>
+                    <div class="sn-vignette"></div>
                 </div>
             `;
 
@@ -369,11 +377,36 @@ class LaminarioApp {
                         <div class="page-number">${pageNum}</div>
                     </div>
                 `;
+            } // End of if/else logic for contentHtml
+
+            let docPage = document.getElementById(page.id);
+            if (!docPage) {
+                // Not in DOM, create from scratch
+                docPage = document.createElement('div');
+                docPage.className = 'doc-page type-' + page.type;
+                docPage.id = page.id;
+                docPage.innerHTML = decorHtml + contentHtml;
             }
 
-            docPage.innerHTML = decorHtml + contentHtml;
-            this.documentPreview.appendChild(docPage);
+            // Update page number dynamically for both existing and new pages
+            const pageNumEl = docPage.querySelector('.page-number');
+            if (pageNumEl) {
+                pageNumEl.innerText = pageNum;
+            }
+
+            activeIds.add(page.id);
+            previewFragment.appendChild(docPage); // This moves the existing element instead of duplicating
+        }); // End of this.pages.forEach
+
+        // 1. Remove deleted nodes from DOM
+        Array.from(this.documentPreview.children).forEach(child => {
+            if (!activeIds.has(child.id)) {
+                this.documentPreview.removeChild(child);
+            }
         });
+
+        // 2. Append the ordered fragments
+        this.documentPreview.appendChild(previewFragment);
     }
 
     scrollToPage(id) {
@@ -491,9 +524,14 @@ class LaminarioApp {
         // 2. Remove gap, padding and shadows to prevent page-break offsets in html2pdf
         const originalGap = element.style.gap;
         const originalPadding = element.style.padding;
+        const originalBgColor = element.style.backgroundColor;
 
         element.style.gap = '0px';
         element.style.padding = '0px';
+
+        // Force the background color of the container to match the CSS variable, preventing html2canvas alpha layer bugs
+        const computedBg = getComputedStyle(document.body).getPropertyValue('--page-bg').trim() || '#ffffff';
+        element.style.backgroundColor = computedBg;
 
         const pages = element.querySelectorAll('.doc-page');
         const originalShadows = [];
@@ -515,6 +553,7 @@ class LaminarioApp {
                 document.documentElement.style.setProperty('--zoom', originalDocZoom);
                 element.style.gap = originalGap;
                 element.style.padding = originalPadding;
+                element.style.backgroundColor = originalBgColor;
 
                 pages.forEach((p, i) => {
                     p.style.boxShadow = originalShadows[i];
